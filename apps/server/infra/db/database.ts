@@ -2,14 +2,24 @@ import { PrismaClient } from "../../generated/prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg";
 
 export class DatabaseConnection {
-    connectionString: string
+    private connectionString: string;
+    private static instance : PrismaClient;
 
     constructor(connectionString: string) {
-        this.connectionString = connectionString
+        this.connectionString = connectionString;
     }
 
-    connect(){
-        // const adapter = new PrismaPg({ connectionString });
-        // const client = new PrismaClient()
+    public connect(): PrismaClient {
+        if (!DatabaseConnection.instance) {
+            const adapter = new PrismaPg({
+                connectionString: this.connectionString
+            });
+            DatabaseConnection.instance = new PrismaClient({ adapter });
+        }
+        return DatabaseConnection.instance;
+    }
+
+    public getInstance() {
+        return DatabaseConnection.instance
     }
 }
