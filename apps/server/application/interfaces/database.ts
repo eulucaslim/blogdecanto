@@ -1,13 +1,13 @@
 
-export interface DatabaseProps {
+export interface DatabaseProps<T> {
     connectionString: string;
+    instance: T;
 }
 
-export abstract class DatabaseConnection  {
+export abstract class DatabaseConnection {
 
-    private constructor(props: DatabaseProps ) { }
+    private constructor(props: DatabaseProps<object>) { }
 
-    abstract connect(): void
     abstract disconnect(): void
       
 }

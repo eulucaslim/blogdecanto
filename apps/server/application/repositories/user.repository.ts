@@ -1,29 +1,47 @@
-import { DatabaseConnection } from "../../infrastructure/db/database";
+
+import { DatabaseConnectionPrisma } from "../../infrastructure/db/database";
 import { Repository } from "../interfaces/repositories";
-import { User as UserDomain } from "../../domain/entities/user";
-import { v7 as uuidv7 } from 'uuid';
+import { User } from "../../domain/entities/user";
+import { UserMapper } from "../../infrastructure/mappers/user.mapper";
 
 
-class UserRepository implements Repository {
 
-    constructor(private db : DatabaseConnection) {
+class UserRepository implements Repository<User> {
+
+    constructor(private db : DatabaseConnectionPrisma) {
     }
 
-    create<UserDomain>(entity: UserDomain): UserDomain {
-     throw new Error("Method not implemented.");    
+    async create(entity: User): User{
+
+        const data = {
+            id: entity.id,
+            username: entity.username,
+            email: entity.email,
+        }
+
+        const prismaUser = await this.db.instance?.user.create({
+            data: data
+        })
+
+        // FIXME: Update this method
+        const userEntity = UserMapper.toDomain(prismaUser)
+
+        return null;
     }
     
-    delete(id: string): void {
+    delete(id: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
 
-    findById<User>(email: string): User {
-        const entity: any = this.db.getInstance().user.findUnique({
-            where: { email: email }
+    async findById(id: string): Promise<User | null>   {
+        const entity = await this.db.instance?.user.findUnique({
+            where: { id }
         })
-        return entity;
+        if (!entity) return null;
+
+        return User.create(entity.username, entity.email)
     }
-    update<T>(entity: T, id: string): T {
+    update<T>(id: string, entity: T,): T {
         throw new Error("Method not implemented.");
     }
 
