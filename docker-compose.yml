@@ -12,7 +12,7 @@ services:
       - db_data:/var/lib/postgresql/data
     restart: always
     ports:
-      - "${DATABASE_PORT}:${DATABASE_PORT}"
+      - "${DATABASE_PORT}:5432"
     networks:
       - blog-networks
 

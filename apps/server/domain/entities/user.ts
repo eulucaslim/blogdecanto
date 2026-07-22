@@ -5,6 +5,7 @@ export interface UserProps {
     id: string
     username: string
     email: string
+    password: string
     posts: Post[]
     comments: Comment[]
     likes: Like[]
@@ -14,9 +15,9 @@ export class User {
 
     private constructor(private props: UserProps) {}
 
-    public static create(username: string, email: string) {
+    public static create(username: string, email: string, password: string) {
 
-        if (!username || !email){
+        if (!username || !email || !password){
             throw new Error("This props not can be empty!")
         }
 
@@ -24,6 +25,7 @@ export class User {
             id: crypto.randomUUID().toString(),
             username,
             email,
+            password,
             posts: [],
             comments: [],
             likes: []
@@ -40,6 +42,10 @@ export class User {
 
     public get email(): string {
         return this.props.email;
+    }
+    
+    public get password(): string {
+        return this.props.password
     }
 
     public get posts(): Post[] {

@@ -1,11 +1,10 @@
+import { UserDTO } from "../../application/dto/user.dto";
 import { User } from "../../domain/entities/user";
-import { Prisma } from "../generated/prisma/client";
-
 
 export class UserMapper {
 
-    static toDomain(dto: Prisma.UserUncheckedCreateInput) {
-        const { username, email } = dto;
-        return User.create(username, email)
+    static toDomain(dto: UserDTO) {
+        const { username, email, password } = dto;
+        return User.create(username, email, password)
     }
 }
