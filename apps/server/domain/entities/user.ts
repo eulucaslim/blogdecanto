@@ -15,14 +15,14 @@ export class User {
 
     private constructor(private props: UserProps) {}
 
-    public static create(username: string, email: string, password: string) {
+    public static create(username: string, email: string, password: string, id?: string) {
 
         if (!username || !email || !password){
             throw new Error("This props not can be empty!")
         }
 
         return new User({
-            id: crypto.randomUUID().toString(),
+            id: id ?? crypto.randomUUID().toString(),
             username,
             email,
             password,

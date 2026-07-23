@@ -174,8 +174,8 @@ export type LikeWhereInput = {
   isLiked?: Prisma.BoolFilter<"Like"> | boolean
   postId?: Prisma.StringFilter<"Like"> | string
   authorId?: Prisma.StringFilter<"Like"> | string
-  post?: Prisma.XOR<Prisma.PostScalarRelationFilter, Prisma.PostWhereInput>
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  post?: Prisma.XOR<Prisma.PostScalarRelationFilter, Prisma.PostWhereInput>
 }
 
 export type LikeOrderByWithRelationInput = {
@@ -183,8 +183,8 @@ export type LikeOrderByWithRelationInput = {
   isLiked?: Prisma.SortOrder
   postId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  post?: Prisma.PostOrderByWithRelationInput
   author?: Prisma.UserOrderByWithRelationInput
+  post?: Prisma.PostOrderByWithRelationInput
 }
 
 export type LikeWhereUniqueInput = Prisma.AtLeast<{
@@ -195,8 +195,8 @@ export type LikeWhereUniqueInput = Prisma.AtLeast<{
   isLiked?: Prisma.BoolFilter<"Like"> | boolean
   postId?: Prisma.StringFilter<"Like"> | string
   authorId?: Prisma.StringFilter<"Like"> | string
-  post?: Prisma.XOR<Prisma.PostScalarRelationFilter, Prisma.PostWhereInput>
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  post?: Prisma.XOR<Prisma.PostScalarRelationFilter, Prisma.PostWhereInput>
 }, "id">
 
 export type LikeOrderByWithAggregationInput = {
@@ -222,8 +222,8 @@ export type LikeScalarWhereWithAggregatesInput = {
 export type LikeCreateInput = {
   id?: string
   isLiked?: boolean
-  post: Prisma.PostCreateNestedOneWithoutLikesInput
   author: Prisma.UserCreateNestedOneWithoutLikesInput
+  post: Prisma.PostCreateNestedOneWithoutLikesInput
 }
 
 export type LikeUncheckedCreateInput = {
@@ -236,8 +236,8 @@ export type LikeUncheckedCreateInput = {
 export type LikeUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   isLiked?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  post?: Prisma.PostUpdateOneRequiredWithoutLikesNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutLikesNestedInput
+  post?: Prisma.PostUpdateOneRequiredWithoutLikesNestedInput
 }
 
 export type LikeUncheckedUpdateInput = {
@@ -526,8 +526,8 @@ export type LikeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   isLiked?: boolean
   postId?: boolean
   authorId?: boolean
-  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["like"]>
 
 export type LikeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -535,8 +535,8 @@ export type LikeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   isLiked?: boolean
   postId?: boolean
   authorId?: boolean
-  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["like"]>
 
 export type LikeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -544,8 +544,8 @@ export type LikeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   isLiked?: boolean
   postId?: boolean
   authorId?: boolean
-  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["like"]>
 
 export type LikeSelectScalar = {
@@ -557,23 +557,23 @@ export type LikeSelectScalar = {
 
 export type LikeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "isLiked" | "postId" | "authorId", ExtArgs["result"]["like"]>
 export type LikeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
 }
 export type LikeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
 }
 export type LikeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  post?: boolean | Prisma.PostDefaultArgs<ExtArgs>
 }
 
 export type $LikePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Like"
   objects: {
-    post: Prisma.$PostPayload<ExtArgs>
     author: Prisma.$UserPayload<ExtArgs>
+    post: Prisma.$PostPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -974,8 +974,8 @@ readonly fields: LikeFieldRefs;
  */
 export interface Prisma__LikeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  post<T extends Prisma.PostDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PostDefaultArgs<ExtArgs>>): Prisma.Prisma__PostClient<runtime.Types.Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  post<T extends Prisma.PostDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PostDefaultArgs<ExtArgs>>): Prisma.Prisma__PostClient<runtime.Types.Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

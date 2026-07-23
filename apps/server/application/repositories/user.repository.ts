@@ -1,58 +1,73 @@
 
 import { DatabaseConnectionPrisma } from "../../infrastructure/db/database";
 import { Repository } from "../interfaces/repositories";
-import { User } from "../../domain/entities/user";
+import { User as UserEntity } from "../../domain/entities/user";
 import { UserMapper } from "../../infrastructure/mappers/user.mapper";
-import { UserDTO } from "../dto/user.dto";
 
 
+export type UserPrisma = {
+    id: string,
+    username: string,
+    email: string,
+    password: string,
+}
 
-class UserRepository implements Repository<User> {
+class UserRepository implements Repository<UserEntity> {
 
-    constructor(private db : DatabaseConnectionPrisma) {
-    }
+    constructor(private db : DatabaseConnectionPrisma) { }
 
-    async create(entity: User): User {
+    async create(entity: UserEntity): Promise<UserEntity> {
 
-        const data = {
-            id: entity.id,
-            username: entity.username,
-            email: entity.email,
-            password: entity.password
-        }
+        const data = UserMapper.toPrisma(entity)
+        const prismaUser = await this.db.instance?.user.create({ data }) as UserPrisma
+        const userEntity = UserMapper.toDomain(prismaUser)
 
-        const prismaUser = await this.db.instance?.user.create({
-            data: data
-        })
-        
-        const dto = {
-            username: prismaUser?.username,
-            email: prismaUser?.email,
-            password: prismaUser?.password,
-        } as UserDTO
-        // FIXME: Update this method
-        const userEntity = UserMapper.toDomain()
-
-        return null;
+        return userEntity;
     }
     
-    delete(id: string): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-
-    async findById(id: string): Promise<User | null>   {
-        const entity = await this.db.instance?.user.findUnique({
+    async delete(id: string): Promise<void> {
+        await this.db.instance?.user.delete({
             where: { id }
         })
-        if (!entity) return null;
-
-        return User.create(entity.username, entity.email)
-    }
-    update<T>(id: string, entity: T,): T {
-        throw new Error("Method not implemented.");
     }
 
-    findByEmail<UserDomain>(email: string): UserDomain {
-        throw new Error("Method not implemented.");
+    async findById(id: string): Promise<UserEntity> {
+        const prismaUser = await this.db.instance?.user.findFirst({
+            where: { id }
+        })
+
+        if (!prismaUser) {
+            throw new Error(`User ${id} not found `)
+        }
+
+        const userEntity = UserMapper.toDomain(prismaUser)
+        return userEntity;
+    }
+
+    async update(id: string, entity: UserEntity): Promise<UserEntity> {
+
+        const prismaUser = await this.db.instance?.user.findFirst({
+            where: { id }
+        })
+
+         if (!prismaUser) {
+            throw new Error(`User ${id} not found `)
+        }
+
+        const data = UserMapper.toPrisma(entity)
+        
+        const updatedPrismaUser = await this.db.instance?.user.update({
+            where: { id },
+            data: data
+        }) as UserPrisma
+
+        return UserMapper.toDomain(updatedPrismaUser)
+    }
+
+    async findAll(): Promise<UserEntity[] | []> {
+        
+        const users = await this.db.instance?.user.findMany()
+
+        return users?.map(u => UserMapper.toDomain(u)) ?? []
     }
 }

@@ -166,18 +166,18 @@ export type PostWhereInput = {
   id?: Prisma.StringFilter<"Post"> | string
   content?: Prisma.StringFilter<"Post"> | string
   authorId?: Prisma.StringFilter<"Post"> | string
-  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   comments?: Prisma.CommentListRelationFilter
   likes?: Prisma.LikeListRelationFilter
+  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type PostOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   content?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
-  author?: Prisma.UserOrderByWithRelationInput
   comments?: Prisma.CommentOrderByRelationAggregateInput
   likes?: Prisma.LikeOrderByRelationAggregateInput
+  author?: Prisma.UserOrderByWithRelationInput
 }
 
 export type PostWhereUniqueInput = Prisma.AtLeast<{
@@ -187,9 +187,9 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.PostWhereInput | Prisma.PostWhereInput[]
   content?: Prisma.StringFilter<"Post"> | string
   authorId?: Prisma.StringFilter<"Post"> | string
-  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   comments?: Prisma.CommentListRelationFilter
   likes?: Prisma.LikeListRelationFilter
+  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type PostOrderByWithAggregationInput = {
@@ -213,9 +213,9 @@ export type PostScalarWhereWithAggregatesInput = {
 export type PostCreateInput = {
   id?: string
   content: string
-  author: Prisma.UserCreateNestedOneWithoutPostsInput
   comments?: Prisma.CommentCreateNestedManyWithoutPostInput
   likes?: Prisma.LikeCreateNestedManyWithoutPostInput
+  author: Prisma.UserCreateNestedOneWithoutPostsInput
 }
 
 export type PostUncheckedCreateInput = {
@@ -229,9 +229,9 @@ export type PostUncheckedCreateInput = {
 export type PostUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   comments?: Prisma.CommentUpdateManyWithoutPostNestedInput
   likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
 }
 
 export type PostUncheckedUpdateInput = {
@@ -414,8 +414,8 @@ export type PostScalarWhereInput = {
 export type PostCreateWithoutLikesInput = {
   id?: string
   content: string
-  author: Prisma.UserCreateNestedOneWithoutPostsInput
   comments?: Prisma.CommentCreateNestedManyWithoutPostInput
+  author: Prisma.UserCreateNestedOneWithoutPostsInput
 }
 
 export type PostUncheckedCreateWithoutLikesInput = {
@@ -444,8 +444,8 @@ export type PostUpdateToOneWithWhereWithoutLikesInput = {
 export type PostUpdateWithoutLikesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   comments?: Prisma.CommentUpdateManyWithoutPostNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
 }
 
 export type PostUncheckedUpdateWithoutLikesInput = {
@@ -458,8 +458,8 @@ export type PostUncheckedUpdateWithoutLikesInput = {
 export type PostCreateWithoutCommentsInput = {
   id?: string
   content: string
-  author: Prisma.UserCreateNestedOneWithoutPostsInput
   likes?: Prisma.LikeCreateNestedManyWithoutPostInput
+  author: Prisma.UserCreateNestedOneWithoutPostsInput
 }
 
 export type PostUncheckedCreateWithoutCommentsInput = {
@@ -488,8 +488,8 @@ export type PostUpdateToOneWithWhereWithoutCommentsInput = {
 export type PostUpdateWithoutCommentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
-  author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
 }
 
 export type PostUncheckedUpdateWithoutCommentsInput = {
@@ -567,9 +567,9 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   content?: boolean
   authorId?: boolean
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   comments?: boolean | Prisma.Post$commentsArgs<ExtArgs>
   likes?: boolean | Prisma.Post$likesArgs<ExtArgs>
+  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.PostCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["post"]>
 
@@ -595,9 +595,9 @@ export type PostSelectScalar = {
 
 export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "authorId", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   comments?: boolean | Prisma.Post$commentsArgs<ExtArgs>
   likes?: boolean | Prisma.Post$likesArgs<ExtArgs>
+  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.PostCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PostIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -610,9 +610,9 @@ export type PostIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Post"
   objects: {
-    author: Prisma.$UserPayload<ExtArgs>
     comments: Prisma.$CommentPayload<ExtArgs>[]
     likes: Prisma.$LikePayload<ExtArgs>[]
+    author: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1012,9 +1012,9 @@ readonly fields: PostFieldRefs;
  */
 export interface Prisma__PostClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   comments<T extends Prisma.Post$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   likes<T extends Prisma.Post$likesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Post$likesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
