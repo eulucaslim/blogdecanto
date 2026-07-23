@@ -12,13 +12,13 @@ export class Post {
 
     private constructor(private props: PostProps) {}
 
-    public static create(content: string, authorId: string) {
+    public static create(content: string, authorId: string, id?: string) {
 
         if (!content || !authorId){
             throw new Error("This props not can be empty!")
         }
         return new Post({
-            id: crypto.randomUUID().toString(),
+            id: id ?? crypto.randomUUID().toString(),
             content,
             authorId,
             comments: [],

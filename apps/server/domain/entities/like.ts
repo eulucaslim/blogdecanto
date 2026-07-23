@@ -10,13 +10,13 @@ export class Like {
 
     private constructor(private props: LikeProps) {}
 
-    public static create(isLiked: boolean, authorId: string, postId: string) {
+    public static create(isLiked: boolean, authorId: string, postId: string, id?: string) {
 
         if (!postId || !authorId){
             throw new Error("This props not can be empty!")
         }
         return new Like({
-            id: crypto.randomUUID().toString(),
+            id: id ?? crypto.randomUUID().toString(),
             isLiked,
             authorId,
             postId
