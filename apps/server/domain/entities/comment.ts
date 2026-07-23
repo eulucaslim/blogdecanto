@@ -11,13 +11,13 @@ export class Comment {
 
     private constructor(private props: CommentProps) {}
 
-    public static create(content: string, authorId: string, postId: string) {
+    public static create(content: string, authorId: string, postId: string, id?: string) {
 
         if (!content || !authorId || !postId) {
             throw new Error("This props not can be empty!")
         }
         return new Comment({
-            id: crypto.randomUUID().toString(),
+            id: id ?? crypto.randomUUID().toString(),
             content,
             postId,
             authorId
