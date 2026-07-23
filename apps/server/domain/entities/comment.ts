@@ -5,6 +5,7 @@ export interface CommentProps {
     content: string
     postId: string
     authorId: string
+    createdAt: Date
 }
 
 export class Comment {
@@ -20,7 +21,8 @@ export class Comment {
             id: id ?? crypto.randomUUID().toString(),
             content,
             postId,
-            authorId
+            authorId,
+            createdAt: new Date()
         })
     }
 

@@ -6,6 +6,7 @@ export interface UserProps {
     username: string
     email: string
     password: string
+    createdAt: Date
     posts: Post[]
     comments: Comment[]
     likes: Like[]
@@ -26,6 +27,7 @@ export class User {
             username,
             email,
             password,
+            createdAt: new Date(),
             posts: [],
             comments: [],
             likes: []

@@ -4,6 +4,7 @@ export interface PostProps {
     id: string
     content: string
     authorId: string
+    createdAt: Date
     comments: Comment[]
     likes: Like[]
 }
@@ -21,6 +22,7 @@ export class Post {
             id: id ?? crypto.randomUUID().toString(),
             content,
             authorId,
+            createdAt: new Date(),
             comments: [],
             likes: []
         })

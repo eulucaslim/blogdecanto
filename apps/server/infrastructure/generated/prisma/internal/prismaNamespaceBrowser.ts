@@ -77,7 +77,8 @@ export const UserScalarFieldEnum = {
   id: 'id',
   username: 'username',
   email: 'email',
-  password: 'password'
+  password: 'password',
+  createdAt: 'createdAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -86,7 +87,8 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const PostScalarFieldEnum = {
   id: 'id',
   content: 'content',
-  authorId: 'authorId'
+  authorId: 'authorId',
+  createdAt: 'createdAt'
 } as const
 
 export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
@@ -96,7 +98,8 @@ export const LikeScalarFieldEnum = {
   id: 'id',
   isLiked: 'isLiked',
   postId: 'postId',
-  authorId: 'authorId'
+  authorId: 'authorId',
+  createdAt: 'createdAt'
 } as const
 
 export type LikeScalarFieldEnum = (typeof LikeScalarFieldEnum)[keyof typeof LikeScalarFieldEnum]
@@ -106,7 +109,8 @@ export const CommentScalarFieldEnum = {
   id: 'id',
   content: 'content',
   postId: 'postId',
-  authorId: 'authorId'
+  authorId: 'authorId',
+  createdAt: 'createdAt'
 } as const
 
 export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]

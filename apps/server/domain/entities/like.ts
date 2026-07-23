@@ -4,6 +4,7 @@ export interface LikeProps {
     isLiked: boolean
     authorId: string
     postId: string
+    createdAt: Date
 }
 
 export class Like {
@@ -19,7 +20,8 @@ export class Like {
             id: id ?? crypto.randomUUID().toString(),
             isLiked,
             authorId,
-            postId
+            postId,
+            createdAt: new Date()
         })
     }
 
