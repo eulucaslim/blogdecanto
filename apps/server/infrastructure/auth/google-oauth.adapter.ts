@@ -44,6 +44,19 @@ export class GoogleOAuthAdapter implements GoogleOAuthService {
         });
     }
 
+    async exchangeAuthorizationCode(code: string): Promise<GoogleIdentity> {
+        if (!code) {
+            throw new Error("A Google authorization code is required!");
+        }
+
+        const { tokens } = await this.client.getToken(code);
+        if (!tokens.id_token) {
+            throw new Error("Google did not return an ID token!");
+        }
+
+        return this.verifyIdToken(tokens.id_token);
+    }
+
     async verifyIdToken(idToken: string): Promise<GoogleIdentity> {
         if (!idToken) {
             throw new Error("A Google ID token is required!");

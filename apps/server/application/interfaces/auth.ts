@@ -8,5 +8,6 @@ export interface GoogleIdentity {
 
 export interface GoogleOAuthService {
     getAuthorizationUrl(state?: string): string
+    exchangeAuthorizationCode(code: string): Promise<GoogleIdentity>
     verifyIdToken(idToken: string): Promise<GoogleIdentity>
 }

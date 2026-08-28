@@ -59,6 +59,28 @@ export class GoogleCloudStorageService implements StorageService {
         await this.bucket.file(key).delete({ ignoreNotFound: true });
     }
 
+    async getSignedUploadUrl(
+        key: string,
+        contentType?: string,
+        expiresInSeconds = this.signedUrlExpiresInSeconds
+    ): Promise<string> {
+        if (!key) {
+            throw new Error("A storage object key is required to create an upload URL!");
+        }
+        if (expiresInSeconds <= 0) {
+            throw new Error("Signed URL expiration must be greater than zero!");
+        }
+
+        const [url] = await this.bucket.file(key).getSignedUrl({
+            version: "v4",
+            action: "write",
+            expires: Date.now() + expiresInSeconds * 1000,
+            ...(contentType ? { contentType } : {}),
+        });
+
+        return url;
+    }
+
     async getSignedUrl(key: string, expiresInSeconds = this.signedUrlExpiresInSeconds): Promise<string> {
         if (!key) {
             throw new Error("A storage object key is required to create a signed URL!");
