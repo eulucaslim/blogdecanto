@@ -31,3 +31,7 @@ dist-ssr
 
 # typescript
 *.tsbuildinfo
+
+# Commit the template while keeping real environment files private
+!.env.example
+!**/.env.example

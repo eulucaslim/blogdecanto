@@ -4,14 +4,16 @@ import { UserPrisma } from "../../application/repositories/user.repository";
 export class UserMapper {
 
     static toDomain(prismaUser: UserPrisma) {
-        
-        const { id, username, email, password } = prismaUser;
-        
         return User.create(
-            username, 
-            email, 
-            password,
-            id
+            prismaUser.username,
+            prismaUser.email,
+            prismaUser.password,
+            prismaUser.id,
+            {
+                googleSubject: prismaUser.googleSubject,
+                avatarUrl: prismaUser.avatarUrl,
+                role: prismaUser.role,
+            }
         )
     }
 
@@ -20,7 +22,10 @@ export class UserMapper {
             id: entity.id,
             username: entity.username,
             email: entity.email,
-            password: entity.username
+            password: entity.password,
+            googleSubject: entity.googleSubject,
+            avatarUrl: entity.avatarUrl,
+            role: entity.role,
         }
     }
 }

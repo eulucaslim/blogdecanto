@@ -1,13 +1,18 @@
-
 import { DatabaseConnectionPrisma } from "../../infrastructure/db/database";
 import { Repository } from "../interfaces/repositories";
-import { Post as PostEntity } from "../../domain/entities/post";
+import { Post as PostEntity, PostStatus } from "../../domain/entities/post";
 import { PostMapper } from "../../infrastructure/mappers/post.mapper";
 
 
 export type PostPrisma = {
     id: string,
+    title: string,
+    slug: string,
     content: string,
+    excerpt: string | null,
+    coverImageKey: string | null,
+    status: PostStatus,
+    publishedAt: Date | null,
     authorId: string,
 }
 

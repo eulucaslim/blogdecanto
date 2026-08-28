@@ -1,19 +1,19 @@
 export interface UserDTOProps {
     username: string
     email: string
-    password: string
+    password: string | null
 }
 
 export class UserDTO {
 
     private constructor(private props: UserDTOProps) {}
 
-    public static create(username: string, email: string, password: string) {
+    public static create(username: string, email: string, password?: string | null) {
 
         return new UserDTO({
             username,
             email,
-            password
+            password: password ?? null
         })
     }
 
@@ -25,7 +25,7 @@ export class UserDTO {
         return this.props.email;
     }
     
-    public get password(): string {
+    public get password(): string | null {
         return this.props.password
     }
 
