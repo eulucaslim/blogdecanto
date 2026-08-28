@@ -206,7 +206,7 @@ const parseStoredPostDraft = (value: string): StoredPostDraft | null => {
     ) {
       return null
     }
-    if (typeof candidate.savedAt !== "string") return null
+    if (typeof candidate.savedAt !== "string" || Number.isNaN(Date.parse(candidate.savedAt))) return null
     return {
       draft: {
         title: draftCandidate.title,
@@ -444,7 +444,6 @@ function App() {
   const [autosavedAt, setAutosavedAt] = useState<string | null>(null)
   const [autosaveHydrated, setAutosaveHydrated] = useState(false)
   const [isDraftDirty, setIsDraftDirty] = useState(false)
-  const skipAutosaveRef = useRef(false)
 
   const switchToAdmin = () => {
     setIsLoading(true)
@@ -535,12 +534,27 @@ function App() {
 
   useEffect(() => {
     if (!isAdmin || !autosaveHydrated || !isDraftDirty) return
-    if (skipAutosaveRef.current) {
-      skipAutosaveRef.current = false
-      return
-    }
 
     const timeout = window.setTimeout(() => {
+      const hasDraftContent = Boolean(
+        draft.title.trim() ||
+          draft.slug.trim() ||
+          draft.excerpt.trim() ||
+          draft.content.trim() ||
+          draft.coverImage ||
+          draft.coverImageKey,
+      )
+      if (!hasDraftContent) {
+        try {
+          localStorage.removeItem(AUTOSAVE_STORAGE_KEY)
+        } catch {
+          // Local storage can be unavailable in private browsing contexts.
+        }
+        setAutosavedAt(null)
+        setAutosaveStatus("idle")
+        return
+      }
+
       setAutosaveStatus("saving")
       const savedAt = new Date().toISOString()
       try {
@@ -746,7 +760,6 @@ function App() {
         coverImage: remotePost.coverImage ?? "",
         coverImageKey: remotePost.coverImageKey ?? "",
       })
-      skipAutosaveRef.current = true
       setIsDraftDirty(false)
       try {
         localStorage.removeItem(AUTOSAVE_STORAGE_KEY)
@@ -763,6 +776,15 @@ function App() {
           : [nextPost, ...current],
       )
       setSelectedPostId(localId)
+      const savedAt = new Date().toISOString()
+      try {
+        const stored: StoredPostDraft = { draft, selectedPostId: localId, savedAt }
+        localStorage.setItem(AUTOSAVE_STORAGE_KEY, JSON.stringify(stored))
+        setAutosavedAt(savedAt)
+        setAutosaveStatus("saved")
+      } catch {
+        setAutosaveStatus("idle")
+      }
       setStatusMessage("Saved locally — the API is unavailable, so this change is only in this session.")
       setErrorMessage(`API save failed: ${apiMessage(error)}`)
     } finally {
@@ -1004,7 +1026,9 @@ function App() {
                     )}
                     <span>
                       {autosaveStatus === "recovered"
-                        ? "Recovered local draft"
+                        ? autosavedAt
+                          ? `Recovered local draft · saved at ${formatSavedTime(autosavedAt)}`
+                          : "Recovered local draft"
                         : autosaveStatus === "saving"
                           ? "Saving locally…"
                           : autosavedAt
