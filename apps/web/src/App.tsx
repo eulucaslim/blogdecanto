@@ -20,7 +20,15 @@ import {
   UserRound,
   X,
 } from "lucide-react"
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react"
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+  type ReactNode,
+} from "react"
 
 import { Button } from "@workspace/ui/components/button"
 
@@ -69,6 +77,8 @@ const API_PATHS = {
   session: "/auth/session",
   googleLogin: "/auth/google",
 } as const
+
+const AUTOSAVE_STORAGE_KEY = "canto-notes:post-draft"
 
 const starterPosts: Post[] = [
   {
@@ -173,6 +183,194 @@ const normalizePosts = (value: unknown): Post[] => {
 const apiMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Something went wrong. Please try again."
 
+type StoredPostDraft = {
+  draft: PostDraft
+  selectedPostId: string | null
+  savedAt: string
+}
+
+const parseStoredPostDraft = (value: string): StoredPostDraft | null => {
+  try {
+    const parsed: unknown = JSON.parse(value)
+    if (typeof parsed !== "object" || parsed === null) return null
+    const candidate = parsed as Record<string, unknown>
+    const storedDraft = candidate.draft
+    if (typeof storedDraft !== "object" || storedDraft === null) return null
+    const draftCandidate = storedDraft as Record<string, unknown>
+    if (
+      typeof draftCandidate.title !== "string" ||
+      typeof draftCandidate.slug !== "string" ||
+      typeof draftCandidate.excerpt !== "string" ||
+      typeof draftCandidate.content !== "string" ||
+      (draftCandidate.status !== "draft" && draftCandidate.status !== "published")
+    ) {
+      return null
+    }
+    if (typeof candidate.savedAt !== "string" || Number.isNaN(Date.parse(candidate.savedAt))) return null
+    return {
+      draft: {
+        title: draftCandidate.title,
+        slug: draftCandidate.slug,
+        excerpt: draftCandidate.excerpt,
+        content: draftCandidate.content,
+        status: draftCandidate.status,
+        coverImage: typeof draftCandidate.coverImage === "string" ? draftCandidate.coverImage : "",
+        coverImageKey: typeof draftCandidate.coverImageKey === "string" ? draftCandidate.coverImageKey : "",
+      },
+      selectedPostId: typeof candidate.selectedPostId === "string" ? candidate.selectedPostId : null,
+      savedAt: candidate.savedAt,
+    }
+  } catch {
+    return null
+  }
+}
+
+const formatSavedTime = (date: string) =>
+  new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(date))
+
+const isSafeMarkdownHref = (href: string) => {
+  const value = href.trim()
+  return /^(https?:\/\/|mailto:|#)/i.test(value) || (value.startsWith("/") && !value.startsWith("//"))
+}
+
+const renderInlineMarkdown = (value: string): ReactNode[] => {
+  const nodes: ReactNode[] = []
+  const pattern =
+    /(\[([^\]]+)\]\(([^)\s]+)\)|`([^`]+)`|\*\*([^*]+)\*\*|__([^_]+)__|\*([^*]+)\*|_([^_]+)_)/g
+  let cursor = 0
+  let match: RegExpExecArray | null
+
+  while ((match = pattern.exec(value)) !== null) {
+    if (match.index > cursor) {
+      nodes.push(<span key={`text-${nodes.length}`}>{value.slice(cursor, match.index)}</span>)
+    }
+    const [, token, linkText, linkHref, code, boldA, boldB, italicA, italicB] = match
+    if (linkText && linkHref && isSafeMarkdownHref(linkHref)) {
+      nodes.push(
+        <a
+          className="font-medium text-[#718b32] underline decoration-[#b4cc5c] underline-offset-4"
+          href={linkHref}
+          key={`link-${nodes.length}`}
+          rel={linkHref.startsWith("http") ? "noreferrer" : undefined}
+          target={linkHref.startsWith("http") ? "_blank" : undefined}
+        >
+          {linkText}
+        </a>,
+      )
+    } else if (code) {
+      nodes.push(
+        <code className="rounded bg-black/[0.06] px-1.5 py-0.5 text-[0.9em] dark:bg-white/10" key={`code-${nodes.length}`}>
+          {code}
+        </code>,
+      )
+    } else if (boldA || boldB) {
+      nodes.push(<strong key={`bold-${nodes.length}`}>{boldA ?? boldB}</strong>)
+    } else if (italicA || italicB) {
+      nodes.push(<em key={`italic-${nodes.length}`}>{italicA ?? italicB}</em>)
+    } else {
+      nodes.push(<span key={`text-${nodes.length}`}>{token}</span>)
+    }
+    cursor = match.index + match[0].length
+  }
+
+  if (cursor < value.length) {
+    nodes.push(<span key={`text-${nodes.length}`}>{value.slice(cursor)}</span>)
+  }
+  return nodes
+}
+
+function MarkdownPreview({ content }: { content: string }) {
+  const lines = content.split(/\r?\n/)
+  const blocks: ReactNode[] = []
+  let paragraph: string[] = []
+  const flushParagraph = () => {
+    if (paragraph.length === 0) return
+    blocks.push(
+      <p className="leading-8" key={`paragraph-${blocks.length}`}>
+        {renderInlineMarkdown(paragraph.join(" "))}
+      </p>,
+    )
+    paragraph = []
+  }
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index] ?? ""
+    if (!line.trim()) {
+      flushParagraph()
+      continue
+    }
+
+    const heading = line.match(/^(#{1,3})\s+(.+)$/)
+    if (heading) {
+      flushParagraph()
+      const level = heading[1].length
+      const Heading = level === 1 ? "h1" : level === 2 ? "h2" : "h3"
+      blocks.push(
+        <Heading className="font-semibold tracking-tight" key={`heading-${blocks.length}`}>
+          {renderInlineMarkdown(heading[2])}
+        </Heading>,
+      )
+      continue
+    }
+
+    const unorderedItem = line.match(/^\s*[-*]\s+(.+)$/)
+    if (unorderedItem) {
+      flushParagraph()
+      const items: string[] = [unorderedItem[1]]
+      while (index + 1 < lines.length) {
+        const nextItem = lines[index + 1]?.match(/^\s*[-*]\s+(.+)$/)
+        if (!nextItem) break
+        items.push(nextItem[1])
+        index += 1
+      }
+      blocks.push(
+        <ul className="list-disc space-y-2 pl-6" key={`unordered-${blocks.length}`}>
+          {items.map((item, itemIndex) => (
+            <li key={`${item}-${itemIndex}`}>{renderInlineMarkdown(item)}</li>
+          ))}
+        </ul>,
+      )
+      continue
+    }
+
+    const orderedItem = line.match(/^\s*\d+\.\s+(.+)$/)
+    if (orderedItem) {
+      flushParagraph()
+      const items: string[] = [orderedItem[1]]
+      while (index + 1 < lines.length) {
+        const nextItem = lines[index + 1]?.match(/^\s*\d+\.\s+(.+)$/)
+        if (!nextItem) break
+        items.push(nextItem[1])
+        index += 1
+      }
+      blocks.push(
+        <ol className="list-decimal space-y-2 pl-6" key={`ordered-${blocks.length}`}>
+          {items.map((item, itemIndex) => (
+            <li key={`${item}-${itemIndex}`}>{renderInlineMarkdown(item)}</li>
+          ))}
+        </ol>,
+      )
+      continue
+    }
+
+    const quote = line.match(/^>\s?(.+)$/)
+    if (quote) {
+      flushParagraph()
+      blocks.push(
+        <blockquote className="border-l-2 border-[#b4cc5c] pl-4 italic text-[#687069] dark:text-[#aab2aa]" key={`quote-${blocks.length}`}>
+          {renderInlineMarkdown(quote[1])}
+        </blockquote>,
+      )
+      continue
+    }
+
+    paragraph.push(line.trim())
+  }
+  flushParagraph()
+
+  return blocks.length > 0 ? <div className="space-y-5">{blocks}</div> : <p className="text-[#7b847d]">Nothing to preview yet.</p>
+}
+
 async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, {
     ...init,
@@ -241,6 +439,11 @@ function App() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const profileFileInputRef = useRef<HTMLInputElement>(null)
   const [publicPostId, setPublicPostId] = useState<string | null>(null)
+  const [editorMode, setEditorMode] = useState<"write" | "preview">("write")
+  const [autosaveStatus, setAutosaveStatus] = useState<"idle" | "saving" | "saved" | "recovered">("idle")
+  const [autosavedAt, setAutosavedAt] = useState<string | null>(null)
+  const [autosaveHydrated, setAutosaveHydrated] = useState(false)
+  const [isDraftDirty, setIsDraftDirty] = useState(false)
 
   const switchToAdmin = () => {
     setIsLoading(true)
@@ -296,6 +499,76 @@ function App() {
       cancelled = true
     }
   }, [isAdmin])
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      if (!isAdmin) {
+        setAutosaveHydrated(false)
+        return
+      }
+
+      try {
+        const stored = localStorage.getItem(AUTOSAVE_STORAGE_KEY)
+        const recovered = stored ? parseStoredPostDraft(stored) : null
+        if (recovered) {
+          setDraft(recovered.draft)
+          setSelectedPostId(recovered.selectedPostId)
+          setAutosavedAt(recovered.savedAt)
+          setAutosaveStatus("recovered")
+          setIsDraftDirty(true)
+        } else {
+          setAutosavedAt(null)
+          setAutosaveStatus("idle")
+          setIsDraftDirty(false)
+        }
+      } catch {
+        setAutosavedAt(null)
+        setAutosaveStatus("idle")
+      } finally {
+        setAutosaveHydrated(true)
+      }
+    }, 0)
+
+    return () => window.clearTimeout(timeout)
+  }, [isAdmin])
+
+  useEffect(() => {
+    if (!isAdmin || !autosaveHydrated || !isDraftDirty) return
+
+    const timeout = window.setTimeout(() => {
+      const hasDraftContent = Boolean(
+        draft.title.trim() ||
+          draft.slug.trim() ||
+          draft.excerpt.trim() ||
+          draft.content.trim() ||
+          draft.coverImage ||
+          draft.coverImageKey,
+      )
+      if (!hasDraftContent) {
+        try {
+          localStorage.removeItem(AUTOSAVE_STORAGE_KEY)
+        } catch {
+          // Local storage can be unavailable in private browsing contexts.
+        }
+        setAutosavedAt(null)
+        setAutosaveStatus("idle")
+        return
+      }
+
+      setAutosaveStatus("saving")
+      const savedAt = new Date().toISOString()
+      try {
+        const stored: StoredPostDraft = { draft, selectedPostId, savedAt }
+        localStorage.setItem(AUTOSAVE_STORAGE_KEY, JSON.stringify(stored))
+        setAutosavedAt(savedAt)
+        setAutosaveStatus("saved")
+      } catch {
+        setAutosaveStatus("idle")
+      }
+    }, 500)
+
+    return () => window.clearTimeout(timeout)
+  }, [autosaveHydrated, draft, isAdmin, isDraftDirty, selectedPostId])
 
   const publishedPosts = useMemo(
     () => posts.filter((post) => post.status === "published"),
@@ -390,7 +663,16 @@ function App() {
   }
 
   const selectPost = (post: Post) => {
+    try {
+      localStorage.removeItem(AUTOSAVE_STORAGE_KEY)
+    } catch {
+      // Local storage can be unavailable in private browsing contexts.
+    }
     setSelectedPostId(post.id)
+    setEditorMode("write")
+    setIsDraftDirty(false)
+    setAutosavedAt(null)
+    setAutosaveStatus("idle")
     setDraft({
       title: post.title,
       slug: post.slug,
@@ -405,13 +687,23 @@ function App() {
   }
 
   const startNewPost = () => {
+    try {
+      localStorage.removeItem(AUTOSAVE_STORAGE_KEY)
+    } catch {
+      // Local storage can be unavailable in private browsing contexts.
+    }
     setSelectedPostId(null)
+    setEditorMode("write")
+    setIsDraftDirty(false)
+    setAutosavedAt(null)
+    setAutosaveStatus("idle")
     setDraft(emptyDraft)
     setErrorMessage("")
     setStatusMessage("")
   }
 
   const updateDraft = (field: keyof PostDraft, value: string | PostStatus) => {
+    setIsDraftDirty(true)
     setDraft((current) => ({ ...current, [field]: value }))
   }
 
@@ -468,6 +760,14 @@ function App() {
         coverImage: remotePost.coverImage ?? "",
         coverImageKey: remotePost.coverImageKey ?? "",
       })
+      setIsDraftDirty(false)
+      try {
+        localStorage.removeItem(AUTOSAVE_STORAGE_KEY)
+      } catch {
+        // Local storage can be unavailable in private browsing contexts.
+      }
+      setAutosavedAt(null)
+      setAutosaveStatus("idle")
       setStatusMessage("Saved to the blog API.")
     } catch (error: unknown) {
       setPosts((current) =>
@@ -476,6 +776,15 @@ function App() {
           : [nextPost, ...current],
       )
       setSelectedPostId(localId)
+      const savedAt = new Date().toISOString()
+      try {
+        const stored: StoredPostDraft = { draft, selectedPostId: localId, savedAt }
+        localStorage.setItem(AUTOSAVE_STORAGE_KEY, JSON.stringify(stored))
+        setAutosavedAt(savedAt)
+        setAutosaveStatus("saved")
+      } catch {
+        setAutosaveStatus("idle")
+      }
       setStatusMessage("Saved locally — the API is unavailable, so this change is only in this session.")
       setErrorMessage(`API save failed: ${apiMessage(error)}`)
     } finally {
@@ -565,6 +874,24 @@ function App() {
               </span>
             </button>
             <div className="flex items-center gap-2">
+              <nav
+                aria-label="Workspace navigation"
+                className="hidden items-center gap-1 rounded-xl border border-black/8 bg-white/70 p-1 text-xs dark:border-white/10 dark:bg-white/5 sm:flex"
+              >
+                <button
+                  className="rounded-lg px-3 py-1.5 text-[#687069] transition hover:bg-black/[0.04] dark:text-[#aab2aa] dark:hover:bg-white/5"
+                  onClick={switchToBlog}
+                  type="button"
+                >
+                  Public blog
+                </button>
+                <span
+                  aria-current="page"
+                  className="rounded-lg bg-[#eff7d8] px-3 py-1.5 font-semibold text-[#536c21] dark:bg-[#b4cc5c]/15 dark:text-[#d9f06a]"
+                >
+                  Admin studio
+                </span>
+              </nav>
               <div className="hidden items-center gap-2 pr-1 sm:flex">
                 {profileImage ? (
                   <img alt={`${profileName} profile`} className="size-9 rounded-full object-cover ring-2 ring-white dark:ring-white/10" src={profileImage} />
@@ -577,7 +904,7 @@ function App() {
               </div>
               <Button variant="outline" onClick={switchToBlog}>
                 <BookOpen size={16} />
-                View blog
+                Public blog
               </Button>
               <a href={API_PATHS.googleLogin}>
                 <Button variant="ghost" size="icon" aria-label="Sign in with Google">
@@ -686,7 +1013,30 @@ function App() {
                   {selectedPostId ? draft.title || "Untitled post" : "Make something worth reading."}
                 </h2>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap items-center justify-end gap-3">
+                {autosaveStatus !== "idle" && (
+                  <div
+                    className="inline-flex items-center gap-2 rounded-full border border-black/8 bg-white/70 px-3 py-1.5 text-xs text-[#687069] dark:border-white/10 dark:bg-white/5 dark:text-[#aab2aa]"
+                    role="status"
+                  >
+                    {autosaveStatus === "saving" ? (
+                      <LoaderCircle className="animate-spin" size={13} />
+                    ) : (
+                      <Check className="text-[#718b32]" size={13} />
+                    )}
+                    <span>
+                      {autosaveStatus === "recovered"
+                        ? autosavedAt
+                          ? `Recovered local draft · saved at ${formatSavedTime(autosavedAt)}`
+                          : "Recovered local draft"
+                        : autosaveStatus === "saving"
+                          ? "Saving locally…"
+                          : autosavedAt
+                            ? `Saved locally at ${formatSavedTime(autosavedAt)}`
+                            : "Saved locally"}
+                    </span>
+                  </div>
+                )}
                 {selectedPostId && (
                   <Button disabled={isDeleting} onClick={() => void handleDelete()} variant="destructive">
                     {isDeleting ? <LoaderCircle className="animate-spin" size={16} /> : <Trash2 size={16} />}
@@ -751,13 +1101,39 @@ function App() {
                     />
                   </label>
                   <label className="sm:col-span-2">
-                    <span className="mb-2 block text-sm font-medium">Content</span>
-                    <textarea
-                      className="min-h-64 w-full resize-y rounded-xl border border-black/10 bg-[#fbfbf9] px-4 py-3 text-sm leading-relaxed outline-none focus:border-[#95ae4b] focus:ring-3 focus:ring-[#b4cc5c]/20 dark:border-white/10 dark:bg-white/5"
-                      onChange={(event) => updateDraft("content", event.target.value)}
-                      placeholder="Start writing here…"
-                      value={draft.content}
-                    />
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <span className="text-sm font-medium">Content</span>
+                      <div className="inline-flex rounded-lg border border-black/10 bg-[#fbfbf9] p-1 text-xs dark:border-white/10 dark:bg-white/5">
+                        {(["write", "preview"] as const).map((mode) => (
+                          <button
+                            aria-pressed={editorMode === mode}
+                            className={`rounded-md px-3 py-1.5 font-medium transition ${
+                              editorMode === mode
+                                ? "bg-white text-[#536c21] shadow-sm dark:bg-white/10 dark:text-[#d9f06a]"
+                                : "text-[#7b847d] hover:text-foreground"
+                            }`}
+                            key={mode}
+                            onClick={() => setEditorMode(mode)}
+                            type="button"
+                          >
+                            {mode === "write" ? "Write" : "Preview"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    {editorMode === "write" ? (
+                      <textarea
+                        aria-label="Post content"
+                        className="min-h-64 w-full resize-y rounded-xl border border-black/10 bg-[#fbfbf9] px-4 py-3 text-sm leading-relaxed outline-none focus:border-[#95ae4b] focus:ring-3 focus:ring-[#b4cc5c]/20 dark:border-white/10 dark:bg-white/5"
+                        onChange={(event) => updateDraft("content", event.target.value)}
+                        placeholder="Start writing here…"
+                        value={draft.content}
+                      />
+                    ) : (
+                      <div className="min-h-64 rounded-xl border border-black/10 bg-[#fbfbf9] px-4 py-3 text-sm text-[#3f4740] dark:border-white/10 dark:bg-white/5 dark:text-[#d0d6cd]">
+                        <MarkdownPreview content={draft.content} />
+                      </div>
+                    )}
                   </label>
                 </div>
               </div>
@@ -845,6 +1221,24 @@ function App() {
             <a className="transition hover:text-foreground" href="#newsletter">Newsletter</a>
           </nav>
           <div className="flex items-center gap-2">
+            <nav
+              aria-label="Workspace navigation"
+              className="hidden items-center gap-1 rounded-xl border border-black/8 bg-white/70 p-1 text-xs dark:border-white/10 dark:bg-white/5 sm:flex"
+            >
+              <span
+                aria-current="page"
+                className="rounded-lg bg-[#eff7d8] px-3 py-1.5 font-semibold text-[#536c21] dark:bg-[#b4cc5c]/15 dark:text-[#d9f06a]"
+              >
+                Public blog
+              </span>
+              <button
+                className="rounded-lg px-3 py-1.5 text-[#687069] transition hover:bg-black/[0.04] dark:text-[#aab2aa] dark:hover:bg-white/5"
+                onClick={switchToAdmin}
+                type="button"
+              >
+                Admin studio
+              </button>
+            </nav>
             <a className="hidden sm:block" href={API_PATHS.googleLogin}>
               <Button variant="outline">
                 <LogIn size={16} /> Sign in
@@ -854,7 +1248,7 @@ function App() {
               <Menu size={19} />
             </Button>
             <Button onClick={switchToAdmin} variant="default">
-              Write <ArrowUpRight size={16} />
+              Open studio <ArrowUpRight size={16} />
             </Button>
           </div>
         </div>
