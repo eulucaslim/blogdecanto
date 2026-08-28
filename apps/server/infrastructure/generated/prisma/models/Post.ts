@@ -26,46 +26,88 @@ export type AggregatePost = {
 
 export type PostMinAggregateOutputType = {
   id: string | null
+  title: string | null
+  slug: string | null
   content: string | null
+  excerpt: string | null
+  coverImageKey: string | null
+  status: $Enums.PostStatus | null
+  publishedAt: Date | null
   authorId: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type PostMaxAggregateOutputType = {
   id: string | null
+  title: string | null
+  slug: string | null
   content: string | null
+  excerpt: string | null
+  coverImageKey: string | null
+  status: $Enums.PostStatus | null
+  publishedAt: Date | null
   authorId: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type PostCountAggregateOutputType = {
   id: number
+  title: number
+  slug: number
   content: number
+  excerpt: number
+  coverImageKey: number
+  status: number
+  publishedAt: number
   authorId: number
   createdAt: number
+  updatedAt: number
   _all: number
 }
 
 
 export type PostMinAggregateInputType = {
   id?: true
+  title?: true
+  slug?: true
   content?: true
+  excerpt?: true
+  coverImageKey?: true
+  status?: true
+  publishedAt?: true
   authorId?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type PostMaxAggregateInputType = {
   id?: true
+  title?: true
+  slug?: true
   content?: true
+  excerpt?: true
+  coverImageKey?: true
+  status?: true
+  publishedAt?: true
   authorId?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type PostCountAggregateInputType = {
   id?: true
+  title?: true
+  slug?: true
   content?: true
+  excerpt?: true
+  coverImageKey?: true
+  status?: true
+  publishedAt?: true
   authorId?: true
   createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -143,9 +185,16 @@ export type PostGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type PostGroupByOutputType = {
   id: string
+  title: string
+  slug: string
   content: string
+  excerpt: string | null
+  coverImageKey: string | null
+  status: $Enums.PostStatus
+  publishedAt: Date | null
   authorId: string
   createdAt: Date
+  updatedAt: Date
   _count: PostCountAggregateOutputType | null
   _min: PostMinAggregateOutputType | null
   _max: PostMaxAggregateOutputType | null
@@ -171,9 +220,16 @@ export type PostWhereInput = {
   OR?: Prisma.PostWhereInput[]
   NOT?: Prisma.PostWhereInput | Prisma.PostWhereInput[]
   id?: Prisma.StringFilter<"Post"> | string
+  title?: Prisma.StringFilter<"Post"> | string
+  slug?: Prisma.StringFilter<"Post"> | string
   content?: Prisma.StringFilter<"Post"> | string
+  excerpt?: Prisma.StringNullableFilter<"Post"> | string | null
+  coverImageKey?: Prisma.StringNullableFilter<"Post"> | string | null
+  status?: Prisma.EnumPostStatusFilter<"Post"> | $Enums.PostStatus
+  publishedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   authorId?: Prisma.StringFilter<"Post"> | string
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   comments?: Prisma.CommentListRelationFilter
   likes?: Prisma.LikeListRelationFilter
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -181,9 +237,16 @@ export type PostWhereInput = {
 
 export type PostOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  excerpt?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImageKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   comments?: Prisma.CommentOrderByRelationAggregateInput
   likes?: Prisma.LikeOrderByRelationAggregateInput
   author?: Prisma.UserOrderByWithRelationInput
@@ -191,22 +254,36 @@ export type PostOrderByWithRelationInput = {
 
 export type PostWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  slug?: string
   AND?: Prisma.PostWhereInput | Prisma.PostWhereInput[]
   OR?: Prisma.PostWhereInput[]
   NOT?: Prisma.PostWhereInput | Prisma.PostWhereInput[]
+  title?: Prisma.StringFilter<"Post"> | string
   content?: Prisma.StringFilter<"Post"> | string
+  excerpt?: Prisma.StringNullableFilter<"Post"> | string | null
+  coverImageKey?: Prisma.StringNullableFilter<"Post"> | string | null
+  status?: Prisma.EnumPostStatusFilter<"Post"> | $Enums.PostStatus
+  publishedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   authorId?: Prisma.StringFilter<"Post"> | string
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   comments?: Prisma.CommentListRelationFilter
   likes?: Prisma.LikeListRelationFilter
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id">
+}, "id" | "slug">
 
 export type PostOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  excerpt?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImageKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.PostCountOrderByAggregateInput
   _max?: Prisma.PostMaxOrderByAggregateInput
   _min?: Prisma.PostMinOrderByAggregateInput
@@ -217,15 +294,29 @@ export type PostScalarWhereWithAggregatesInput = {
   OR?: Prisma.PostScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PostScalarWhereWithAggregatesInput | Prisma.PostScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Post"> | string
+  title?: Prisma.StringWithAggregatesFilter<"Post"> | string
+  slug?: Prisma.StringWithAggregatesFilter<"Post"> | string
   content?: Prisma.StringWithAggregatesFilter<"Post"> | string
+  excerpt?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  coverImageKey?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  status?: Prisma.EnumPostStatusWithAggregatesFilter<"Post"> | $Enums.PostStatus
+  publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
   authorId?: Prisma.StringWithAggregatesFilter<"Post"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
 }
 
 export type PostCreateInput = {
   id?: string
+  title: string
+  slug: string
   content: string
+  excerpt?: string | null
+  coverImageKey?: string | null
+  status?: $Enums.PostStatus
+  publishedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   comments?: Prisma.CommentCreateNestedManyWithoutPostInput
   likes?: Prisma.LikeCreateNestedManyWithoutPostInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
@@ -233,17 +324,31 @@ export type PostCreateInput = {
 
 export type PostUncheckedCreateInput = {
   id?: string
+  title: string
+  slug: string
   content: string
+  excerpt?: string | null
+  coverImageKey?: string | null
+  status?: $Enums.PostStatus
+  publishedAt?: Date | string | null
   authorId: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutPostInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutPostInput
 }
 
 export type PostUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUpdateManyWithoutPostNestedInput
   likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
@@ -251,31 +356,59 @@ export type PostUpdateInput = {
 
 export type PostUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutPostNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostCreateManyInput = {
   id?: string
+  title: string
+  slug: string
   content: string
+  excerpt?: string | null
+  coverImageKey?: string | null
+  status?: $Enums.PostStatus
+  publishedAt?: Date | string | null
   authorId: string
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type PostUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type PostUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type PostListRelationFilter = {
@@ -290,23 +423,44 @@ export type PostOrderByRelationAggregateInput = {
 
 export type PostCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  excerpt?: Prisma.SortOrder
+  coverImageKey?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type PostMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  excerpt?: Prisma.SortOrder
+  coverImageKey?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type PostMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  excerpt?: Prisma.SortOrder
+  coverImageKey?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  publishedAt?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type PostScalarRelationFilter = {
@@ -356,6 +510,14 @@ export type PostUncheckedUpdateManyWithoutAuthorNestedInput = {
   deleteMany?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
 }
 
+export type EnumPostStatusFieldUpdateOperationsInput = {
+  set?: $Enums.PostStatus
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type PostCreateNestedOneWithoutLikesInput = {
   create?: Prisma.XOR<Prisma.PostCreateWithoutLikesInput, Prisma.PostUncheckedCreateWithoutLikesInput>
   connectOrCreate?: Prisma.PostCreateOrConnectWithoutLikesInput
@@ -386,16 +548,30 @@ export type PostUpdateOneRequiredWithoutCommentsNestedInput = {
 
 export type PostCreateWithoutAuthorInput = {
   id?: string
+  title: string
+  slug: string
   content: string
+  excerpt?: string | null
+  coverImageKey?: string | null
+  status?: $Enums.PostStatus
+  publishedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   comments?: Prisma.CommentCreateNestedManyWithoutPostInput
   likes?: Prisma.LikeCreateNestedManyWithoutPostInput
 }
 
 export type PostUncheckedCreateWithoutAuthorInput = {
   id?: string
+  title: string
+  slug: string
   content: string
+  excerpt?: string | null
+  coverImageKey?: string | null
+  status?: $Enums.PostStatus
+  publishedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutPostInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutPostInput
 }
@@ -431,24 +607,45 @@ export type PostScalarWhereInput = {
   OR?: Prisma.PostScalarWhereInput[]
   NOT?: Prisma.PostScalarWhereInput | Prisma.PostScalarWhereInput[]
   id?: Prisma.StringFilter<"Post"> | string
+  title?: Prisma.StringFilter<"Post"> | string
+  slug?: Prisma.StringFilter<"Post"> | string
   content?: Prisma.StringFilter<"Post"> | string
+  excerpt?: Prisma.StringNullableFilter<"Post"> | string | null
+  coverImageKey?: Prisma.StringNullableFilter<"Post"> | string | null
+  status?: Prisma.EnumPostStatusFilter<"Post"> | $Enums.PostStatus
+  publishedAt?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
   authorId?: Prisma.StringFilter<"Post"> | string
   createdAt?: Prisma.DateTimeFilter<"Post"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
 }
 
 export type PostCreateWithoutLikesInput = {
   id?: string
+  title: string
+  slug: string
   content: string
+  excerpt?: string | null
+  coverImageKey?: string | null
+  status?: $Enums.PostStatus
+  publishedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   comments?: Prisma.CommentCreateNestedManyWithoutPostInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
 }
 
 export type PostUncheckedCreateWithoutLikesInput = {
   id?: string
+  title: string
+  slug: string
   content: string
+  excerpt?: string | null
+  coverImageKey?: string | null
+  status?: $Enums.PostStatus
+  publishedAt?: Date | string | null
   authorId: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutPostInput
 }
 
@@ -470,33 +667,61 @@ export type PostUpdateToOneWithWhereWithoutLikesInput = {
 
 export type PostUpdateWithoutLikesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUpdateManyWithoutPostNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
 }
 
 export type PostUncheckedUpdateWithoutLikesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostCreateWithoutCommentsInput = {
   id?: string
+  title: string
+  slug: string
   content: string
+  excerpt?: string | null
+  coverImageKey?: string | null
+  status?: $Enums.PostStatus
+  publishedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   likes?: Prisma.LikeCreateNestedManyWithoutPostInput
   author: Prisma.UserCreateNestedOneWithoutPostsInput
 }
 
 export type PostUncheckedCreateWithoutCommentsInput = {
   id?: string
+  title: string
+  slug: string
   content: string
+  excerpt?: string | null
+  coverImageKey?: string | null
+  status?: $Enums.PostStatus
+  publishedAt?: Date | string | null
   authorId: string
   createdAt?: Date | string
+  updatedAt?: Date | string
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutPostInput
 }
 
@@ -518,46 +743,88 @@ export type PostUpdateToOneWithWhereWithoutCommentsInput = {
 
 export type PostUpdateWithoutCommentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
 }
 
 export type PostUncheckedUpdateWithoutCommentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   likes?: Prisma.LikeUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostCreateManyAuthorInput = {
   id?: string
+  title: string
+  slug: string
   content: string
+  excerpt?: string | null
+  coverImageKey?: string | null
+  status?: $Enums.PostStatus
+  publishedAt?: Date | string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type PostUpdateWithoutAuthorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUpdateManyWithoutPostNestedInput
   likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
 }
 
 export type PostUncheckedUpdateWithoutAuthorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutPostNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutPostNestedInput
 }
 
 export type PostUncheckedUpdateManyWithoutAuthorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumPostStatusFieldUpdateOperationsInput | $Enums.PostStatus
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -602,9 +869,16 @@ export type PostCountOutputTypeCountLikesArgs<ExtArgs extends runtime.Types.Exte
 
 export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  title?: boolean
+  slug?: boolean
   content?: boolean
+  excerpt?: boolean
+  coverImageKey?: boolean
+  status?: boolean
+  publishedAt?: boolean
   authorId?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   comments?: boolean | Prisma.Post$commentsArgs<ExtArgs>
   likes?: boolean | Prisma.Post$likesArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -613,28 +887,49 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  title?: boolean
+  slug?: boolean
   content?: boolean
+  excerpt?: boolean
+  coverImageKey?: boolean
+  status?: boolean
+  publishedAt?: boolean
   authorId?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["post"]>
 
 export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  title?: boolean
+  slug?: boolean
   content?: boolean
+  excerpt?: boolean
+  coverImageKey?: boolean
+  status?: boolean
+  publishedAt?: boolean
   authorId?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["post"]>
 
 export type PostSelectScalar = {
   id?: boolean
+  title?: boolean
+  slug?: boolean
   content?: boolean
+  excerpt?: boolean
+  coverImageKey?: boolean
+  status?: boolean
+  publishedAt?: boolean
   authorId?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "authorId" | "createdAt", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "content" | "excerpt" | "coverImageKey" | "status" | "publishedAt" | "authorId" | "createdAt" | "updatedAt", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   comments?: boolean | Prisma.Post$commentsArgs<ExtArgs>
   likes?: boolean | Prisma.Post$likesArgs<ExtArgs>
@@ -657,9 +952,16 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    title: string
+    slug: string
     content: string
+    excerpt: string | null
+    coverImageKey: string | null
+    status: $Enums.PostStatus
+    publishedAt: Date | null
     authorId: string
     createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["post"]>
   composites: {}
 }
@@ -1087,9 +1389,16 @@ export interface Prisma__PostClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface PostFieldRefs {
   readonly id: Prisma.FieldRef<"Post", 'String'>
+  readonly title: Prisma.FieldRef<"Post", 'String'>
+  readonly slug: Prisma.FieldRef<"Post", 'String'>
   readonly content: Prisma.FieldRef<"Post", 'String'>
+  readonly excerpt: Prisma.FieldRef<"Post", 'String'>
+  readonly coverImageKey: Prisma.FieldRef<"Post", 'String'>
+  readonly status: Prisma.FieldRef<"Post", 'PostStatus'>
+  readonly publishedAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly authorId: Prisma.FieldRef<"Post", 'String'>
   readonly createdAt: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Post", 'DateTime'>
 }
     
 

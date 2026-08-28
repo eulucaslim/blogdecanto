@@ -1,7 +1,6 @@
-
 import { DatabaseConnectionPrisma } from "../../infrastructure/db/database";
 import { Repository } from "../interfaces/repositories";
-import { User as UserEntity } from "../../domain/entities/user";
+import { User as UserEntity, UserRole } from "../../domain/entities/user";
 import { UserMapper } from "../../infrastructure/mappers/user.mapper";
 
 
@@ -9,7 +8,10 @@ export type UserPrisma = {
     id: string,
     username: string,
     email: string,
-    password: string,
+    password: string | null,
+    googleSubject: string | null,
+    avatarUrl: string | null,
+    role: UserRole,
 }
 
 class UserRepository implements Repository<UserEntity> {

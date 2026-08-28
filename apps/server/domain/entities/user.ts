@@ -1,12 +1,18 @@
 import { Like } from "./like"
 import { Post } from "./post"
 
+export type UserRole = "USER" | "ADMIN"
+
 export interface UserProps {
     id: string
     username: string
     email: string
-    password: string
+    password: string | null
+    googleSubject: string | null
+    avatarUrl: string | null
+    role: UserRole
     createdAt: Date
+    updatedAt: Date
     posts: Post[]
     comments: Comment[]
     likes: Like[]
@@ -16,9 +22,15 @@ export class User {
 
     private constructor(private props: UserProps) {}
 
-    public static create(username: string, email: string, password: string, id?: string) {
+    public static create(
+        username: string,
+        email: string,
+        password?: string | null,
+        id?: string,
+        options: Partial<Pick<UserProps, "googleSubject" | "avatarUrl" | "role">> = {}
+    ) {
 
-        if (!username || !email || !password){
+        if (!username || !email){
             throw new Error("This props not can be empty!")
         }
 
@@ -26,8 +38,12 @@ export class User {
             id: id ?? crypto.randomUUID().toString(),
             username,
             email,
-            password,
+            password: password ?? null,
+            googleSubject: options.googleSubject ?? null,
+            avatarUrl: options.avatarUrl ?? null,
+            role: options.role ?? "USER",
             createdAt: new Date(),
+            updatedAt: new Date(),
             posts: [],
             comments: [],
             likes: []
@@ -46,8 +62,20 @@ export class User {
         return this.props.email;
     }
     
-    public get password(): string {
+    public get password(): string | null {
         return this.props.password
+    }
+
+    public get googleSubject(): string | null {
+        return this.props.googleSubject
+    }
+
+    public get avatarUrl(): string | null {
+        return this.props.avatarUrl
+    }
+
+    public get role(): UserRole {
+        return this.props.role
     }
 
     public get posts(): Post[] {
