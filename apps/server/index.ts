@@ -6,6 +6,7 @@ import { DatabaseConnectionPrisma } from "./infrastructure/db/database";
 import { createAuthRouter } from "./infrastructure/http/auth.routes";
 import { requireAdmin, requireSession } from "./infrastructure/http/auth.middleware";
 import { createPostRouter } from "./infrastructure/http/post.routes";
+import { createProfileRouter } from "./infrastructure/http/profile.routes";
 import { createUploadRouter } from "./infrastructure/http/upload.routes";
 import { GoogleCloudStorageService } from "./infrastructure/storage/google-cloud-storage.service";
 
@@ -30,6 +31,7 @@ app.use("/api", createUploadRouter(storage, adminMiddleware));
 
 if (database) {
   app.use("/api", createPostRouter(database, adminMiddleware));
+  app.use("/api", createProfileRouter(database, adminMiddleware));
 
   if (sessionService && process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REDIRECT_URI) {
     app.use("/auth", createAuthRouter({

@@ -71,7 +71,7 @@ type UploadResponse = {
 const API_PATHS = {
   publicPosts: "/posts",
   adminPosts: "/admin/posts",
-  profile: "/admin/profile",
+  profile: "/api/admin/profile",
   presignUpload: "/admin/uploads/presign",
   uploadedUrl: "/admin/uploads/url",
   session: "/auth/session",
