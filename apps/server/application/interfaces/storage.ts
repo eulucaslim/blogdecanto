@@ -6,4 +6,5 @@ export interface StorageService {
     ): Promise<string>
     delete(key: string): Promise<void>
     getSignedUrl(key: string, expiresInSeconds?: number): Promise<string>
+    getSignedUploadUrl(key: string, contentType?: string, expiresInSeconds?: number): Promise<string>
 }
